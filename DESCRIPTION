@@ -1,13 +1,13 @@
 Package: rDependencyGraph
 Type: Package
-Title: plots reverse dependency of cuntions in R
+Title: plots reverse dependency of functions in R
 Version: 0.0
 Date: 2013-06-19
 Depends:
     mvbutils
 Author: Daniel Falster, Remko Duursma
 Maintainer: Daniel Falster <daniel.falster@mq.edu.au>
-Description: A package for plotting dependecy of functions in R
+Description: A package for plotting dependency of functions in R
 License: GPL
 Collate:
     'functions.R'

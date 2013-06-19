@@ -1,4 +1,4 @@
-RdependencyGraph
+rDependencyGraph
 ================
 
 Makes a plot
