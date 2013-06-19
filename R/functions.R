@@ -8,11 +8,9 @@ plotDependencyForAPath <- function(path="./R", prune=".onAttach", plotit=TRUE){
 }  
 
 plotDependencyForFiles <- function(filenames, prune=".onAttach", plotit=TRUE, name= "functions"){
-  
-  for(x in filenames) source(x)
-  
-  functionNames <- NA #TODO : HOW TO LIST FUNCTIONS IN FILES
-  
+  e <- new.env()  
+  for(x in filenames) source(x, local = e)
+  functionNames <- ls(env=e) #TODO : HOW TO LIST FUNCTIONS IN FILES
   plotFunctionDependency(functionNames, name =name, prune=prune, plotit=plotit)
 } 
 
