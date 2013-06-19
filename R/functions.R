@@ -1,10 +1,10 @@
 
 
-plotDependencyForAPath <- function(path="./R", prune=".onAttach", plotit=TRUE){
+plotDependencyForAPath <- function(path="./R", prune=".onAttach", plotit=TRUE, name = paste0(basename(path), "-dep")){
   
   filenames <- list.files(pattern="[.][rR]$", path=path, full.names=TRUE)
 
-  plotDependencyForFiles(filenames, prune=prune, plotit=plotit, name= basename(path))
+  plotDependencyForFiles(filenames, prune=prune, plotit=plotit, name= name)
 }  
 
 plotDependencyForFiles <- function(filenames, prune=".onAttach", plotit=TRUE, name= "functions"){
@@ -14,13 +14,13 @@ plotDependencyForFiles <- function(filenames, prune=".onAttach", plotit=TRUE, na
   plotFunctionDependency(functionNames, name =name, prune=prune, plotit=plotit)
 } 
 
-plotDependencyForAPackage <- function(package, prune=".onAttach", plotit=TRUE){ 
+plotDependencyForAPackage <- function(package, prune=".onAttach", plotit=TRUE, name= paste0(package, "-dep")){ 
   
-  library(package, character.only = TRUE)
+  library(package, character.only = TRUE, quietly=TRUE)
   
   functionNames <- as.character(lsf.str(paste0("package:", package)))
   
-  plotFunctionDependency(functionNames, name =package, prune=prune, plotit=plotit)
+  plotFunctionDependency(functionNames, name =name, prune=prune, plotit=plotit)
 }
   
 
@@ -39,7 +39,7 @@ plotFunctionDependency <- function(functionNames, name = "plot", prune=".onAttac
   graph <- makeDependencyGraph(foodwebSummary)
   
   # Make .dot file (input for graphViz)
-  makeGraphVizPlot(paste0(name, "-dep"), graph)
+  makeGraphVizPlot(name, graph)
   
   return(invisible(foodwebSummary))
 }
