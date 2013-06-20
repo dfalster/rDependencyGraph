@@ -94,6 +94,11 @@ plot.dependency <- function(x, name = "dependency-plot"){
   writeLines( "}", output )
   close(output)
   cmd <- paste0("dot -Tpng ", fname, " > " ,sub(".dot", ".png", fname, fixed = TRUE))
-  system(cmd)  
-  cmd
+  
+  if(.Platform$OS.type == "windows")
+    shell(cmd)
+  else
+    system(cmd)  
+  
+return(cmd)
 }
