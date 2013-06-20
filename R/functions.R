@@ -59,16 +59,18 @@ makeDependencyGraph <- function(foodwebSummary){
     for(j in 1:length(fs[[i]])){
       fun <- names(fs)[i]
       dep <- fs[[i]][j]
-      
-      # It seems graphViz does not like special characters here...
-      # Is there a workaround?
-      fun <- gsub("\\.", "", fun)
-      dep <- gsub("\\.", "", dep)
-      
       graph <- c(graph, sprintf("%s->%s",fun,dep)) 
     }
   }
   graph
+}
+
+# It seems graphViz does not like special characters, replace with capital letters
+sanitize<-function(x){
+  s <- c(".", "?", "!", "$","*", "%", "&")
+  for(i in seq_along(s))
+    x <- gsub(s[i], LETTERS[i], x, fixed=TRUE)
+  x  
 }
 
 summary.foodweb <- function(x,...){
@@ -82,6 +84,8 @@ summary.foodweb <- function(x,...){
 }
 
 plot.dependency <- function(x, name = "dependency-plot"){
+  x$graph <- sanitize(x$graph)
+  
   fname <-paste0(name, ".dot")
   output <- file(fname, open = "w" )
   writeLines( "digraph G {", output )
