@@ -1,34 +1,37 @@
 
+# in the prune argument you can list functions you don't want in the
+# dependency graph, .onAttach() is a typically hidden function that
+# executes stuff when the package is attached (see R-exts)
 
-plotDependencyForAPath <- function(path="./R", prune=".onAttach", plotit=TRUE, name = paste0(basename(path), "-dep")){
+dependencyForAPath <- function(path="./R", prune=".onAttach"){
   
   filenames <- list.files(pattern="[.][rR]$", path=path, full.names=TRUE)
 
-  plotDependencyForFiles(filenames, prune=prune, plotit=plotit, name= name)
+  dependencyForFiles(filenames, prune=prune)
 }  
 
-plotDependencyForFiles <- function(filenames, prune=".onAttach", plotit=TRUE, name= "functions"){
+dependencyForFiles <- function(filenames, prune=".onAttach"){
   e <- new.env()  
   for(x in filenames) source(x, local = e)
-  functionNames <- ls(env=e) #TODO : HOW TO LIST FUNCTIONS IN FILES
-  plotFunctionDependency(functionNames, name =name, prune=prune, plotit=plotit)
+  functionNames <- ls(env=e) 
+  dependencyForFunctions(functionNames,  prune=prune)
 } 
 
-plotDependencyForAPackage <- function(package, prune=".onAttach", plotit=TRUE, name= paste0(package, "-dep")){ 
+dependencyForAPackage <- function(package, prune=".onAttach"){ 
   
   library(package, character.only = TRUE, quietly=TRUE)
   
   functionNames <- as.character(lsf.str(paste0("package:", package)))
   
-  plotFunctionDependency(functionNames, name =name, prune=prune, plotit=plotit)
+  dependencyForFunctions(functionNames,  prune=prune)
 }
   
 
-plotFunctionDependency <- function(functionNames, name = "plot", prune=".onAttach", plotit=TRUE){  
+dependencyForFunctions <- function(functionNames, prune=".onAttach"){  
   
   library(mvbutils, quietly=TRUE)  
   
-  f <- foodweb(functionNames, plotting=FALSE)
+  f <- foodweb(functionNames)
   
   foodwebSummary <- summary(f)
   
@@ -38,11 +41,11 @@ plotFunctionDependency <- function(functionNames, name = "plot", prune=".onAttac
   
   graph <- makeDependencyGraph(foodwebSummary)
   
-  # Make .dot file (input for graphViz)
-  makeGraphVizPlot(name, graph)
-  
-  return(invisible(foodwebSummary))
+  obj <-list(graph =graph, foodwebSummary= invisible(foodwebSummary), foodweb = f)
+  class(obj) <- "dependency"
+  obj
 }
+
 
 # make graph of function dependencies
 # (mostly written by :
@@ -78,13 +81,15 @@ summary.foodweb <- function(x,...){
   return(l2)
 }
 
-makeGraphVizPlot <- function(name, graph){
+plot.dependency <- function(x, name = "dependency-plot"){
   fname <-paste0(name, ".dot")
   output <- file(fname, open = "w" )
   writeLines( "digraph G {", output )
   writeLines( "   rankdir=LR;", output )
-  writeLines( sprintf( "%s ; ", graph), output )
+  writeLines( sprintf( "%s ; ", x$graph), output )
   writeLines( "}", output )
   close(output)
-  system(paste0("dot -Tpng ", fname, " > " ,sub(".dot", ".png", fname, fixed = TRUE)))  
+  cmd <- paste0("dot -Tpng ", fname, " > " ,sub(".dot", ".png", fname, fixed = TRUE))
+  system(cmd)  
+  cmd
 }

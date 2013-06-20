@@ -3,7 +3,5 @@
 # 
 # #install_github("rDependencyGraph","dfalster")
 # source("R/functions.R")
-# 
-# plotDependencyForFiles("R/functions.R")
-#   
-#   
+# g<-dependencyForAPackage("smatr")
+# plot(g, name="smatr")
