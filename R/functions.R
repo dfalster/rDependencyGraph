@@ -3,6 +3,17 @@
 # dependency graph, .onAttach() is a typically hidden function that
 # executes stuff when the package is attached (see R-exts)
 
+dependencyForEnv <- function(env=globalenv(), prune=".onAttach"){
+  
+  library(mvbutils, quietly=TRUE)  
+  
+  if (!is.environment(env))
+    stop(env, "is not a valid envirnoment")
+   
+  functionNames <- unique(find.funs(env))
+  dependencyForFunctions(functionNames,  prune=prune)    
+}  
+  
 dependencyForAPath <- function(path="./R", prune=".onAttach"){
   
   filenames <- list.files(pattern="[.][rR]$", path=path, full.names=TRUE)
